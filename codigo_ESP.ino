@@ -1,3 +1,5 @@
+#include <WiFi.h>
+#include <PubSubClient.h>
 #include <DHT.h>
 
 // -------------------- PINAGEM --------------------
@@ -10,28 +12,57 @@
 // -------------------- OBJETOS --------------------
 DHT dht(DHTPIN, DHTTYPE);
 
-// -------------------- MQTT --------------------
-const char* default_BROKER_MQTT = "44.223.43.74"; // IP do Broker MQTT
-const int default_BROKER_PORT = 1883; // Porta do Broker MQTT
-const int default_D4 = 2; // Pino do LED onboard
+// -------------------- WIFI -----------------------
+const char* WIFI_SSID = "Wokwi-GUEST";
+const char* WIFI_PASSWORD = "";
 
-// Configurações - Dispositivo
-const char* default_TOPICO_SUBSCRIBE = "/TEF/device002/cmd"; // Tópico MQTT de escuta
-const char* default_TOPICO_PUBLISH_1 = "/TEF/device002/attrs"; // Tópico MQTT de envio de informações para Broker
-const char* default_TOPICO_PUBLISH_2 = "/TEF/device002/attrs/p"; // Tópico MQTT de envio de informações para Broker
-const char* default_ID_MQTT = "fiware_002"; // ID MQTT
-const char* topicPrefix = "device002";   // Declaração da variável para o prefixo do tópico
+// -------------------- MQTT -----------------------
+const char* BROKER_MQTT = "44.223.43.74";
+int BROKER_PORT = 1883;
 
-// Variáveis para configurações editáveis
+WiFiClient espClient;
+PubSubClient client(espClient);
 
-char* BROKER_MQTT = const_cast<char*>(default_BROKER_MQTT);
-int BROKER_PORT = default_BROKER_PORT;
-char* TOPICO_SUBSCRIBE = const_cast<char*>(default_TOPICO_SUBSCRIBE);
-char* TOPICO_PUBLISH_1 = const_cast<char*>(default_TOPICO_PUBLISH_1);
-char* TOPICO_PUBLISH_2 = const_cast<char*>(default_TOPICO_PUBLISH_2);
-char* ID_MQTT = const_cast<char*>(default_ID_MQTT);
+const char* TOPICO_TEMP      = "/TEF/device002/attrs/t";
+const char* TOPICO_UMID      = "/TEF/device002/attrs/u";
+const char* TOPICO_DIST      = "/TEF/device002/attrs/d";
+const char* TOPICO_MOV       = "/TEF/device002/attrs/m";
 
-// -------------------- CONFIG ---------------------
+const char* ID_MQTT = "fiware_002";
+
+// -------------------- FUNÇÕES --------------------
+void conectarWiFi() {
+  Serial.print("Conectando ao WiFi: ");
+  Serial.println(WIFI_SSID);
+  
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("\nWiFi conectado!");
+  Serial.print("IP: ");
+  Serial.println(WiFi.localIP());
+}
+
+void reconnectMQTT() {
+  while (!client.connected()) {
+    Serial.print("Conectando ao MQTT...");
+    
+    if (client.connect(ID_MQTT)) {
+      Serial.println("Conectado!");
+    } else {
+      Serial.print("Falha, rc=");
+      Serial.print(client.state());
+      Serial.println(" tentando novamente em 2s");
+      delay(2000);
+    }
+  }
+}
+
+// -------------------- DISTÂNCIA --------------------
 long medirDistancia() {
   digitalWrite(TRIGGER_PIN, LOW);
   delayMicroseconds(2);
@@ -40,13 +71,13 @@ long medirDistancia() {
   delayMicroseconds(10);
   digitalWrite(TRIGGER_PIN, LOW);
 
-  long duracao = pulseIn(ECHO_PIN, HIGH, 30000);  
-  long distancia = duracao * 0.034 / 2; // velocidade do som ~ 0.034 cm/us
+  long duracao = pulseIn(ECHO_PIN, HIGH, 30000);
+  long distancia = duracao * 0.034 / 2;
 
-  return distancia; // em cm
+  return distancia;
 }
 
-// -------------------- SETUP ----------------------
+// -------------------- SETUP -----------------------
 void setup() {
   Serial.begin(115200);
 
@@ -54,46 +85,54 @@ void setup() {
   pinMode(ECHO_PIN, INPUT);
 
   dht.begin();
+
+  conectarWiFi();
+  client.setServer(BROKER_MQTT, BROKER_PORT);
 }
 
-// -------------------- LOOP -----------------------
+// -------------------- LOOP ------------------------
 void loop() {
-  // ----- DISTÂNCIA -----
-  long distancia = medirDistancia();
 
-  // ----- TEMPERATURA / UMIDADE -----
+  if (!client.connected()) {
+    reconnectMQTT();
+  }
+  client.loop();
+
+  // ----- LEITURAS -----
+  long distancia = medirDistancia();
   float temp = dht.readTemperature();
   float umid = dht.readHumidity();
 
-  // ----- CHECAGEM DE ERRO -----
-  if (isnan(temp) || isnan(umid)) {
-    Serial.println("Erro ao ler o DHT22");
-  }
-
-  // ----- "MOVIMENTO" pelo HC-SR04 (variação brusca) -----
-  // Exemplo de simples detecção:
   static long ultimaDist = distancia;
-  bool movimento = abs(distancia - ultimaDist) > 5; // diferença de 5 cm
+  bool movimento = abs(distancia - ultimaDist) > 5;
   ultimaDist = distancia;
 
-  // ----- OUTPUT -----
-  Serial.println("------ LEITURAS ------");
-  Serial.print("Distancia: ");
-  Serial.print(distancia);
-  Serial.println(" cm");
+  if (isnan(temp) || isnan(umid)) {
+    Serial.println("Erro ao ler o DHT22");
+    return;
+  }
 
-  Serial.print("Temperatura: ");
-  Serial.print(temp);
-  Serial.println(" C");
+  // ----- PUBLICAÇÃO MQTT -----
+  char buffer[10];
 
-  Serial.print("Umidade: ");
-  Serial.print(umid);
-  Serial.println(" %");
+  dtostrf(temp, 4, 2, buffer);
+  client.publish(TOPICO_TEMP, buffer);
 
-  Serial.print("Movimento detectado: ");
-  Serial.println(movimento ? "SIM" : "NAO");
+  dtostrf(umid, 4, 2, buffer);
+  client.publish(TOPICO_UMID, buffer);
 
-  Serial.println("------------------------\n");
+  dtostrf(distancia, 4, 0, buffer);
+  client.publish(TOPICO_DIST, buffer);
+
+  client.publish(TOPICO_MOV, movimento ? "1" : "0");
+
+  // ----- MONITOR SERIAL -----
+  Serial.println("------ LEITURAS MQTT ------");
+  Serial.printf("Temperatura: %.2f C\n", temp);
+  Serial.printf("Umidade: %.2f %%\n", umid);
+  Serial.printf("Distância: %ld cm\n", distancia);
+  Serial.printf("Movimento: %s\n", movimento ? "SIM" : "NAO");
+  Serial.println("----------------------------\n");
 
   delay(1000);
 }

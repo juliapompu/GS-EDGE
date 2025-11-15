@@ -1,59 +1,56 @@
-body {
-      background-color: #0f172a;
-      font-family: "Poppins", sans-serif;
-      color: #f1f5f9;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
+  body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #e6e6e6e6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
 
-    h1 {
-      color: #38bdf8;
-      margin-bottom: 20px;
-      text-align: center;
-    }
 
-    .dashboard {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      width: 80%;
-      max-width: 800px;
-    }
+        .header{
+          background-color: #2980b9;
+          min-height: 150px;
+        }
 
-    .card {
-      background-color: #1e293b;
-      padding: 20px;
-      border-radius: 15px;
-      text-align: center;
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
-      transition: transform 0.2s ease;
-    }
+        .header h2{
+            color: #e6e6e6e6;
+            font-size: 40px;
+            margin-bottom: 40px;
+            margin-top: 45px;
+            margin-left: 40px;
+            display: flex;
+            text-align: center;
+        }
 
-    .card:hover {
-      transform: scale(1.05);
-    }
+        .header p{
+            color: #e6e6e6e6;
+            font-size: 30px;
+            margin-top: -75px;
+            margin-right: 40px;
+            margin-left: 30px;
+            display: flex;
+            text-align: right;
+            justify-content: right;
+            align-items: right;
+        }
 
-    .value {
-      font-size: 2em;
-      color: #38bdf8;
-      margin-top: 10px;
-    }
+        .temp, .um, .dis, .mov {
+            display: flex;
+            font-size: 2em;
+            margin: 15px 0;
+            padding: 20px 40px;
+            border-radius: 15px;
+            background: linear-gradient(to right, #6dd5fa, #2980b9);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+            width: 350px;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+        }
 
-    .status {
-      font-weight: bold;
-      color: #10b981;
-    }
-
-    .status.off {
-      color: #ef4444;
-    }
-
-    footer {
-      margin-top: 30px;
-      color: #94a3b8;
-      font-size: 0.9em;
-    }
+        .temp:hover, .um:hover, .dis:hover, .mov:hover {
+            transform: scale(1.05);
+        }
