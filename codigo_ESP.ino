@@ -5,10 +5,31 @@
 #define ECHO_PIN     35
 
 #define DHTPIN       16
-#define DHTTYPE      DHT22 //ou DHT11
+#define DHTTYPE      DHT22
 
 // -------------------- OBJETOS --------------------
 DHT dht(DHTPIN, DHTTYPE);
+
+// -------------------- MQTT --------------------
+const char* default_BROKER_MQTT = "44.223.43.74"; // IP do Broker MQTT
+const int default_BROKER_PORT = 1883; // Porta do Broker MQTT
+const int default_D4 = 2; // Pino do LED onboard
+
+// Configurações - Dispositivo
+const char* default_TOPICO_SUBSCRIBE = "/TEF/device002/cmd"; // Tópico MQTT de escuta
+const char* default_TOPICO_PUBLISH_1 = "/TEF/device002/attrs"; // Tópico MQTT de envio de informações para Broker
+const char* default_TOPICO_PUBLISH_2 = "/TEF/device002/attrs/p"; // Tópico MQTT de envio de informações para Broker
+const char* default_ID_MQTT = "fiware_002"; // ID MQTT
+const char* topicPrefix = "device002";   // Declaração da variável para o prefixo do tópico
+
+// Variáveis para configurações editáveis
+
+char* BROKER_MQTT = const_cast<char*>(default_BROKER_MQTT);
+int BROKER_PORT = default_BROKER_PORT;
+char* TOPICO_SUBSCRIBE = const_cast<char*>(default_TOPICO_SUBSCRIBE);
+char* TOPICO_PUBLISH_1 = const_cast<char*>(default_TOPICO_PUBLISH_1);
+char* TOPICO_PUBLISH_2 = const_cast<char*>(default_TOPICO_PUBLISH_2);
+char* ID_MQTT = const_cast<char*>(default_ID_MQTT);
 
 // -------------------- CONFIG ---------------------
 long medirDistancia() {
