@@ -1,42 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>SafeOffice</title>
+    <title>Monitoramento do Potenciômetro</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #737c84;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 3em;
+            margin-bottom: 40px;
+        }
+
+        .medicao {
+            font-size: 2.5em;
+            margin: 20px 0;
+            padding: 20px 40px;
+            border-radius: 15px;
+            background: linear-gradient(to right, #6dd5fa, #2980b9);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+
+        .medicao:hover {
+            transform: scale(1.05);
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>📊 SafeOffice</h1>
-    </header>
+    <h1>Potenciômetro</h1>
 
+    <div class="medicao">Valor: <span id="potenciometro">--</span></div>
 
-  <div class="dashboard">
-    <div class="card">
-      <h2>Distância</h2>
-      <div class="value" id="distancia">-- cm</div>
-    </div>
+    <script>
+        // Orion Context Broker NGSI v2
+        const ORION_URL = "http://44.223.43.74:1026/v2/entities/urn:ngsi-ld:device:002/attrs/m";
 
-    <div class="card">
-      <h2>Temperatura</h2>
-      <div class="value" id="temperatura">-- °C</div>
-    </div>
+        const FIWARE_HEADERS = {
+            "Fiware-Service": "smart",
+            "Fiware-ServicePath": "/",
+            "Accept": "application/json"
+        };
 
-    <div class="card">
-      <h2>Umidade</h2>
-      <div class="value" id="umidade">-- %</div>
-    </div>
+        function atualizarDados() {
+            fetch(ORION_URL, { method: "GET", headers: FIWARE_HEADERS })
+                .then(async (response) => {
+                    if (!response.ok) {
+                        const txt = await response.text().catch(() => "");
+                        throw new Error(`HTTP ${response.status} - ${txt}`);
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    // Resposta esperada: { "type":"Integer","value":69, ... }
+                    const valor = (data && data.value != null) ? data.value : "--";
+                    document.getElementById('potenciometro').textContent = valor;
+                })
+                .catch(e => {
+                    console.log("Falha ao buscar dados do Orion:", e);
+                });
+        }
 
-    <div class="card">
-      <h2>Movimento</h2>
-      <div class="status" id="movimento">Aguardando...</div>
-    </div>
-  </div>
-
-  <footer>
-   <h3> Desenvolvido com ❤️ para o projeto IoT ESP32</h3>
-  </footer>
-  <script src="script.js"></script>
+        // Atualiza ao carregar
+        atualizarDados();
+        // Atualiza a cada 5 segundos
+        setInterval(atualizarDados, 5000);
+    </script>
 </body>
 </html>
