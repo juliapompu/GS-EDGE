@@ -2,26 +2,43 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta viewport="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>SafeOficce</title>
-    <style>
-      
-    </style>
+    <title>SafeOffice</title>
 </head>
+
 <body>
-    <header class="header">
-        <h2>Central de monitoramento SafeOffice</h2>
-        <p>O cuidado com o ambiente de seu trabalho</p>
-        
+    <header>
+        <h1>Humantech</h1>
+        <h2>SafeOffice</h2>
+        <p>Preservando seu ambiente de trabalho</p>
     </header>
-    <br>
-    <br>
-    <br>
-    <div class="temp">Temperatura: <span id="temp">--</span> °C</div>
-    <div class="um">Umidade: <span id="umid">--</span> %</div>
-    <div class="dis">Distância: <span id="dist">--</span> cm</div>
-    <div class="mov">Movimento: <span id="mov">--</span></div>
+    <div class="container">
+        <div class="card">
+            <div class="label">Temperatura</div>
+            <div class="valor"><span id="temp">--</span> °C</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Umidade</div>
+            <div class="valor"><span id="umid">--</span> %</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Distância</div>
+            <div class="valor"><span id="dist">--</span> cm</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Movimento</div>
+            <div class="valor"><span id="mov">--</span></div>
+        </div>
+    </div>
+    <footer>
+        SafeOffice • Desenvolvido por
+         <span>Humantech</span>
+          — Soluções inteligentes para ambientes seguros.
+    </footer>
 
     <script>
         const BASE_URL = "http://44.223.43.74:1026/v2/entities/urn:ngsi-ld:device:002/attrs/";
@@ -39,7 +56,7 @@
             "Accept": "application/json"
         };
 
-        function buscarAtributo(url, elementoID, transform = x => x) {
+       function buscarAtributo(url, elementoID, transform = x => x) {
             fetch(url, { method: "GET", headers: FIWARE_HEADERS })
                 .then(res => res.json())
                 .then(data => {
@@ -54,12 +71,13 @@
             buscarAtributo(ENDPOINTS.umid, "umid");
             buscarAtributo(ENDPOINTS.dist, "dist");
 
-            // Movimento 0/1 → texto
+            
             buscarAtributo(ENDPOINTS.mov, "mov", val => val == 1 ? "SIM" : "NÃO");
         }
 
         atualizarTudo();
         setInterval(atualizarTudo, 5000);
     </script>
+
 </body>
 </html>

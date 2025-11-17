@@ -1,56 +1,126 @@
-  body {
-            font-family: Arial, Helvetica, sans-serif;
-            background-color: #e6e6e6e6;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+ /* GERAL */
+        body {
+            margin: 0;
+            padding: 0 0 100px 0; 
+            font-family: "Poppins", sans-serif;
+            background: linear-gradient(135deg, #0a1a33, #0f3a69);
+            color: #e2e8f0;
+        }
+
+        h1, h2, h3, p {
             margin: 0;
         }
 
-
-        .header{
-          background-color: #2980b9;
-          min-height: 150px;
-        }
-
-        .header h2{
-            color: #e6e6e6e6;
-            font-size: 40px;
-            margin-bottom: 40px;
-            margin-top: 45px;
-            margin-left: 40px;
-            display: flex;
+        /* HEADER */
+        header {
+            background: #0b1f3e;
+            padding: 30px 20px;
             text-align: center;
-        }
-
-        .header p{
-            color: #e6e6e6e6;
-            font-size: 30px;
-            margin-top: -75px;
-            margin-right: 40px;
-            margin-left: 30px;
-            display: flex;
-            text-align: right;
-            justify-content: right;
-            align-items: right;
-        }
-
-        .temp, .um, .dis, .mov {
-            display: flex;
-            font-size: 2em;
-            margin: 15px 0;
-            padding: 20px 40px;
-            border-radius: 15px;
-            background: linear-gradient(to right, #6dd5fa, #2980b9);
             color: white;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
-            width: 350px;
-            text-align: center;
-            align-items: center;
-            justify-content: center;
+            box-shadow: 0px 4px 8px rgba(0,0,0,0.3);
+            border-bottom: 2px solid #1d4ed8;
         }
 
-        .temp:hover, .um:hover, .dis:hover, .mov:hover {
-            transform: scale(1.05);
+        header h1 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #60a5fa;
+        }
+
+        header h2 {
+            font-size: 1.4rem;
+            margin-top: 8px;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+        header p {
+            margin-top: 5px;
+            font-size: 1rem;
+            color: #93c5fd;
+        }
+
+        /* PAINEL */
+        .container {
+            width: 95%;
+            max-width: 1400px;
+            margin: 40px auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            }
+        }
+
+        .card {
+            background: rgba(255,255,255,0.06);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255,255,255,0.12);
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.25);
+            transition: transform .2s;
+        }
+
+        .card:hover {
+            transform: scale(1.03);
+        }
+
+        .label {
+            font-size: 1.2rem;
+            color: #93c5fd;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .valor {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #60a5fa;
+        }
+
+        /* FOOTER  */
+        footer {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #0b1f3e;
+            color: #93c5fd;
+            padding: 18px 24px;
+            text-align: center;
+            border-top: 2px solid #1d4ed8;
+            font-size: 1rem;
+            z-index: 1000;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.28);
+        }
+
+        footer span {
+            color: #60a5fa;
+        }
+
+        @media (max-width: 600px) {
+            footer {
+                padding: 10px 12px;
+                font-size: 0.92rem;
+            }
+            body {
+                padding-bottom: 64px; 
+            }
+        }
+
+        @media (max-width: 360px) {
+            footer {
+                padding: 8px 10px;
+                font-size: 0.88rem;
+            }
+            body {
+                padding-bottom: 56px;
+            }
         }
