@@ -32,7 +32,7 @@ O sistema foi **montado fisicamente** e também **simulado no Wokwi**.
 > [image](https://github.com/user-attachments/assets/4e0b49ec-3575-4025-a75b-5b97c4443e70)
 
 ### 🎬 Vídeo Explicativo
-> [clique aqui para acessar o vídeo](https://www.youtube.com/watch?v=yIJOSYBAGL0)
+> [clique aqui para acessar o vídeo](https://youtu.be/PEUIWi8D_Qc?si=_MVJ0XckySpBe1BW)
 
 
 ## 🔧 Componentes Utilizados
